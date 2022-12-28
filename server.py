@@ -3,9 +3,8 @@ import struct
 import select
 from socketserver import ThreadingMixIn, TCPServer, StreamRequestHandler
 
-
-HOST = "localhost"
 PORT = 1080
+
 
 class SocksProxy(StreamRequestHandler):
     def get_user_id(self) -> str:
@@ -54,7 +53,6 @@ class SocksProxy(StreamRequestHandler):
             if cmd == 1:
                 remote = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 remote.connect((remote_address, remote_port))
-                # bind_address = remote.getsockname()
                 print('Connected to %s %s' % (remote_address, remote_port))
                 self.begin_exchange(client=self.connection, remote=remote)
 
