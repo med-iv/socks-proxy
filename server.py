@@ -48,7 +48,7 @@ class SocksProxy(StreamRequestHandler):
             self.connection.sendall(b'\x00')
             self.connection.sendall(b'\x5a')
             for i in range(6):
-                self.connection.sendall(b'\x00')
+                self.connection.sendall(b'\x00')  # protocol specification
 
             if cmd == 1:
                 remote = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
