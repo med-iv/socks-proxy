@@ -3,7 +3,6 @@ import struct
 import select
 from socketserver import ThreadingMixIn, TCPServer, StreamRequestHandler
 
-import logging
 
 HOST = "localhost"
 PORT = 1080
@@ -19,8 +18,10 @@ class SocksProxy(StreamRequestHandler):
 
     @staticmethod
     def begin_exchange(client, remote):
-        r, w, e = select.select([client, remote], [], [])
         while True:
+            r, w, e = select.select([client, remote], [], [])
+            print("loop step")
+            print(r)
             if client in r:
                 data = client.recv(4096)
                 if remote.send(data) <= 0:
@@ -32,7 +33,7 @@ class SocksProxy(StreamRequestHandler):
                     break
 
     def handle(self) -> None:
-        logging.info('Accepting connection from %s:%s' % self.client_address)
+        print('Accepting connection from %s:%s' % self.client_address)
 
         try:
             # initiate connection
@@ -40,7 +41,9 @@ class SocksProxy(StreamRequestHandler):
             cmd = struct.unpack("!B", self.connection.recv(1))[0]
             remote_port = struct.unpack('!H', self.connection.recv(2))[0]
             remote_address = socket.inet_ntoa(self.connection.recv(4))
+            print(remote_address, remote_port, cmd)
             user_id = self.get_user_id()
+            print(user_id)
 
             # send acknowledge
             self.connection.sendall(b'\x00')
@@ -51,13 +54,13 @@ class SocksProxy(StreamRequestHandler):
             if cmd == 1:
                 remote = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 remote.connect((remote_address, remote_port))
-                bind_address = remote.getsockname()
-                logging.info('Connected to %s %s' % (remote_address, remote_port))
-                self.begin_exchange()
+                # bind_address = remote.getsockname()
+                print('Connected to %s %s' % (remote_address, remote_port))
+                self.begin_exchange(client=self.connection, remote=remote)
 
             self.server.close_request(self.request)
         except Exception as err:
-            logging.error(err)
+            print(err)
 
 
 class AsyncTCPServer(ThreadingMixIn, TCPServer):
