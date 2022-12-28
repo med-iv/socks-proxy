@@ -15,5 +15,5 @@ python3 server.py
 
 ## Тестирование
 ```
-curl -x socks4://192.168.1.40:1080 https://check-host.net/ip
+curl -x socks4://192.168.1.40:1080 http://example.org
 ```

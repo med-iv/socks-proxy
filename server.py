@@ -68,5 +68,5 @@ class AsyncTCPServer(ThreadingMixIn, TCPServer):
 
 
 if __name__ == '__main__':
-    with AsyncTCPServer((HOST, PORT), SocksProxy) as server:
+    with AsyncTCPServer(('', PORT), SocksProxy) as server:
         server.serve_forever()
